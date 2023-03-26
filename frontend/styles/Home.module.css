@@ -1,0 +1,5 @@
+.main{
+  height: calc(100vh - 24px);
+  width: 100vw;
+  overflow:hidden;
+}

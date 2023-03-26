@@ -1,0 +1,11 @@
+.UpdateGroupChat{
+                height: 100vh;
+                width: 100vw;
+                background-color: rgba(0, 0, 0, 0.555);
+                position: absolute;
+                inset: 0;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+}
