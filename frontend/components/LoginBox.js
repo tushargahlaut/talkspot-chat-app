@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
+import { loginFailure, loginStart, loginSuccess } from "../Redux/userSlice";
 import { useRouter } from "next/router";
 
 const LoginBox = () => {

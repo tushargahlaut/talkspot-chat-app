@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../redux/userSlice";
+import { loginSuccess } from "../Redux/userSlice";
 import { useRouter } from "next/router";
 
 const timestamp = Math.floor(Date.now() / 1000);

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import ChatBox from "./ChatBox";
 import io from "socket.io-client";
-import { addNotifications } from "../redux/userSlice";
+import { addNotifications } from "../Redux/userSlice";
 
 const ENDPOINT = "https://talkspot-backend.onrender.com";
 var socket, selectedChatCompare;
