@@ -3,169 +3,169 @@ import styles from "../../styles/UpdateGroupChat.module.css";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { addMemberToGroupChat, leaveGroupChat, removeMemberFromGroupChat, renameGroupChat } from "../../redux/userSlice";
-
-
+import {
+  addMemberToGroupChat,
+  leaveGroupChat,
+  removeMemberFromGroupChat,
+  renameGroupChat,
+} from "../../redux/userSlice";
 
 const UpdateGroupChat = ({ setIsUpdateGroupChatModal }) => {
-  const selectedChat = useSelector((state)=>state?.user?.selectedChat);
-  const user = useSelector((state)=>state?.user?.currentUser);
+  const selectedChat = useSelector((state) => state?.user?.selectedChat);
+  const user = useSelector((state) => state?.user?.currentUser);
   const dispatch = useDispatch();
   const token = user.token;
   const users = selectedChat?.users;
-  const [chatName,setChatName] = useState(selectedChat?.chatName);
-  const [searchName,setSearchName] = useState("");
-  const [searchResults,setSearchResults] = useState([]);
+  const [chatName, setChatName] = useState(selectedChat?.chatName);
+  const [searchName, setSearchName] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
-    const handleMemberDelete = async (e) => {
+  const handleMemberDelete = async (e) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res1 = await axios.put(
+        "https://talkspot-backend.onrender.com/api/chat/groupremove",
+        {
+          chatId: selectedChat._id,
+          userId: e._id === user._id ? user._id : e._id,
+        },
+        config
+      );
+      console.log(res1.data);
+      if (e._id === user._id) {
+        dispatch(leaveGroupChat());
+      } else dispatch(removeMemberFromGroupChat({ selectedChat, e }));
+      return toast.success("Member Removed");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleNameUpdate = async () => {
+    if (!chatName) {
+      return toast.error("Please Enter Something");
+    }
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res1 = await axios.put(
+        "https://talkspot-backend.onrender.com/api/chat/rename",
+        {
+          chatId: selectedChat._id,
+          chatName,
+        },
+        config
+      );
+      console.log(res1.data);
+      dispatch(renameGroupChat(res1.data));
+      return toast.success("Name Updated Successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleMemberSearch = async () => {
+    if (!searchName) {
+      return;
+    }
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const res1 = await axios.get(
+        `https://talkspot-backend.onrender.com/api/user?search=${searchName}`,
+        config
+      );
+      setSearchResults(res1.data);
+      if (res1.data.length < 1) {
+        return toast.error("No User Found");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const Members = () => {
+    return (
+      <div className="flex">
+        {users?.map((e) => (
+          <div
+            onClick={() => handleMemberDelete(e)}
+            className="flex m-1 cursor-pointer p-1 rounded-sm bg-orange-600"
+          >
+            <p className="text-xs text-white">{e.name}</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              class="w-3 h-3 text-white"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const SearchResults = () => {
+    const handleAddMembers = async (e) => {
+      const index = users.findIndex((item) => item._id === e._id);
+      if (index > -1) {
+        return toast.error("User is already present");
+      }
       try {
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         };
-
-        const res1 = await axios.put("http://localhost:8080/api/chat/groupremove",
-        {
-            chatId:selectedChat._id,
-            userId:e._id === user._id ? user._id : e._id
-        },
-        config
+        const res1 = await axios.put(
+          "https://talkspot-backend.onrender.com/api/chat/groupadd",
+          {
+            chatId: selectedChat._id,
+            userId: e._id,
+          },
+          config
         );
-        console.log(res1.data);
-        if (e._id === user._id){
-            dispatch(leaveGroupChat());
-        }
-        else
-          dispatch(removeMemberFromGroupChat({ selectedChat, e }));
-        return toast.success("Member Removed");
+        console.log(res1);
+        dispatch(addMemberToGroupChat({ selectedChat, e }));
+        return toast.success("Member Added Succesfully");
       } catch (error) {
         console.log(error);
       }
     };
 
-
- 
-  const handleNameUpdate = async() =>{
-        if(!chatName){
-            return toast.error("Please Enter Something");
-        }
-        try {
-            const config = {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            };
-
-            const res1 = await axios.put(
-              "http://localhost:8080/api/chat/rename",
-              {
-                chatId:selectedChat._id,
-                chatName
-              },
-              config
-            );
-            console.log(res1.data);  
-            dispatch(renameGroupChat(res1.data));
-            return toast.success("Name Updated Successfully");
-        } catch (error) {
-            console.log(error);
-        }
-  }
-
-  const handleMemberSearch = async()=>{
-    if(!searchName){
-      return;
-    }
-    try {
-            const config = {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            };
-            const res1 = await axios.get(
-              `http://localhost:8080/api/user?search=${searchName}`,
-              config
-            );
-            setSearchResults(res1.data);
-            if (res1.data.length < 1) {
-              return toast.error("No User Found");
-            }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-
-
- const Members = () => {
-   return (
-     <div className="flex">
-       {users?.map((e) => (
-         <div
-           onClick={() => handleMemberDelete(e)}
-           className="flex m-1 cursor-pointer p-1 rounded-sm bg-orange-600"
-         >
-           <p className="text-xs text-white">{e.name}</p>
-           <svg
-             xmlns="http://www.w3.org/2000/svg"
-             fill="none"
-             viewBox="0 0 24 24"
-             strokeWidth="1.5"
-             stroke="currentColor"
-             class="w-3 h-3 text-white"
-           >
-             <path
-               strokeLinecap="round"
-               strokeLinejoin="round"
-               d="M6 18L18 6M6 6l12 12"
-             />
-           </svg>
-         </div>
-       ))}
-     </div>
-   );
- };
-
- const SearchResults = () =>{
-
-    const handleAddMembers = async(e)=>{
-      const index = users.findIndex((item)=>item._id===e._id);
-      if(index>-1){
-        return toast.error("User is already present");
-      }
-      try {
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          const res1 = await axios.put("http://localhost:8080/api/chat/groupadd",
-          {
-            chatId:selectedChat._id,
-            userId:e._id
-          },
-          config
-          );
-          console.log(res1);
-          dispatch(addMemberToGroupChat({selectedChat,e}));          
-          return toast.success("Member Added Succesfully");
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-      return (
-        <div className="flex">
-          {searchResults?.map((e) => (
-            <div onClick={()=>handleAddMembers(e)} className="flex m-1 cursor-pointer p-1 rounded-sm bg-blue-600">
-              <p className="text-xs text-white">{e.name}</p>
-            </div>
-          ))}
-        </div>
-      );
- }
-
+    return (
+      <div className="flex">
+        {searchResults?.map((e) => (
+          <div
+            onClick={() => handleAddMembers(e)}
+            className="flex m-1 cursor-pointer p-1 rounded-sm bg-blue-600"
+          >
+            <p className="text-xs text-white">{e.name}</p>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className={styles.UpdateGroupChat}>
@@ -231,7 +231,10 @@ const UpdateGroupChat = ({ setIsUpdateGroupChatModal }) => {
                 setSearchName(e.target.value);
               }}
             />
-            <div onClick={handleMemberSearch} className="flex items-center cursor-pointer border h-3/4 border-emerald-700 bg-emerald-700">
+            <div
+              onClick={handleMemberSearch}
+              className="flex items-center cursor-pointer border h-3/4 border-emerald-700 bg-emerald-700"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -248,14 +251,17 @@ const UpdateGroupChat = ({ setIsUpdateGroupChatModal }) => {
               </svg>
             </div>
           </div>
-           {searchResults.length>0 && <SearchResults/>}   
+          {searchResults.length > 0 && <SearchResults />}
         </div>
-        <div onClick={()=>handleMemberDelete(user)} className="bg-red-600 rounded-sm flex items-center p-2 cursor-pointer justify-end">
+        <div
+          onClick={() => handleMemberDelete(user)}
+          className="bg-red-600 rounded-sm flex items-center p-2 cursor-pointer justify-end"
+        >
           <p className="text-white">LEAVE GROUP</p>
         </div>
       </div>
     </div>
   );
 };
- 
+
 export default UpdateGroupChat;

@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import styles from "../../styles/GroupChatModal.module.css"
+import styles from "../../styles/GroupChatModal.module.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { addAllChats, addGroupChat } from "../../redux/userSlice";
-
 
 const GCMembers = ({ gcMembers, setGcMembers }) => {
   const handleMembers = (e) => {
@@ -49,20 +48,16 @@ const GCMembers = ({ gcMembers, setGcMembers }) => {
   );
 };
 
-
-const SearchResults = ({allUsers,setGcMembers,gcMembers}) =>{
-
-  const handleMembers = (e) =>{
-       const index = gcMembers.findIndex(item => item._id === e._id);
-       if(index>-1){
-        return toast.error("Already Added");
-       }
-       else{
+const SearchResults = ({ allUsers, setGcMembers, gcMembers }) => {
+  const handleMembers = (e) => {
+    const index = gcMembers.findIndex((item) => item._id === e._id);
+    if (index > -1) {
+      return toast.error("Already Added");
+    } else {
       setGcMembers([...gcMembers, e]);
-
-       }
-       console.log("GC Members",gcMembers);
-  }
+    }
+    console.log("GC Members", gcMembers);
+  };
 
   return (
     <div className="flex">
@@ -71,33 +66,29 @@ const SearchResults = ({allUsers,setGcMembers,gcMembers}) =>{
           onClick={() => {
             handleMembers(e);
           }}
-          className={` ${
-            "bg-blue-900"
-          }  m-1 flex cursor-pointer p-1 rounded-sm`}
+          className={` ${"bg-blue-900"}  m-1 flex cursor-pointer p-1 rounded-sm`}
         >
           <p className="text-xs text-white">{e.name}</p>
-
         </div>
       ))}
     </div>
   );
-}
+};
 
 const GroupChatModal = ({ setIsGroupChatModal }) => {
-
   const [allUsers, setAllUsers] = useState([]);
-  const [gcMembers,setGcMembers] = useState([]);
-  const [gcName,setGcName] = useState("");
+  const [gcMembers, setGcMembers] = useState([]);
+  const [gcName, setGcName] = useState("");
   const dispatch = useDispatch();
-  const [gcSearch,setGcSearch] = useState("");
-   const user = useSelector((state) => state.user.currentUser);
-   const token = user.token;
-   
- const fetchAllUsers = async(e)=> {
-  e.preventDefault();
-  if(!gcSearch){
-    return toast.error("Please Enter Something");
-  }
+  const [gcSearch, setGcSearch] = useState("");
+  const user = useSelector((state) => state.user.currentUser);
+  const token = user.token;
+
+  const fetchAllUsers = async (e) => {
+    e.preventDefault();
+    if (!gcSearch) {
+      return toast.error("Please Enter Something");
+    }
     try {
       const config = {
         headers: {
@@ -105,52 +96,49 @@ const GroupChatModal = ({ setIsGroupChatModal }) => {
         },
       };
       const res1 = await axios.get(
-        `http://localhost:8080/api/user?search=${gcSearch}`,
+        `https://talkspot-backend.onrender.com/api/user?search=${gcSearch}`,
         config
       );
-      console.log("GC Array",res1.data);
-      if(res1.data.length < 1)
-      {
+      console.log("GC Array", res1.data);
+      if (res1.data.length < 1) {
         return toast.error("No User Found");
       }
       setAllUsers(res1.data);
-      
     } catch (error) {
       console.log(error);
     }
- }
+  };
 
- const handleGC =  async() =>{
-      if(!gcName){
-        return toast.error("Group Chat Name Missing");
-      }
-      if(gcMembers.length<1){
-        return toast.error("Add Some Members");
-      }
-      try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
+  const handleGC = async () => {
+    if (!gcName) {
+      return toast.error("Group Chat Name Missing");
+    }
+    if (gcMembers.length < 1) {
+      return toast.error("Add Some Members");
+    }
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-        const { data } = await axios.post(
-          "http://localhost:8080/api/chat/group",{
-            name:gcName,
-            users:JSON.stringify(gcMembers.map((e)=>e._id))
-          },
-          config
-        );
+      const { data } = await axios.post(
+        "https://talkspot-backend.onrender.com/api/chat/group",
+        {
+          name: gcName,
+          users: JSON.stringify(gcMembers.map((e) => e._id)),
+        },
+        config
+      );
 
-        dispatch(addGroupChat(data));
-        setIsGroupChatModal((prev)=>!prev);
-        return toast.success("Group Chat Created Successfully");
-
-      } catch (error) {
-        console.log(error);
-      }
- }
-
+      dispatch(addGroupChat(data));
+      setIsGroupChatModal((prev) => !prev);
+      return toast.success("Group Chat Created Successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className={styles.GroupChatModal}>
@@ -232,5 +220,5 @@ const GroupChatModal = ({ setIsGroupChatModal }) => {
     </div>
   );
 };
- 
+
 export default GroupChatModal;
