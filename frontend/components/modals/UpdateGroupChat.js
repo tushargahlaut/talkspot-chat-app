@@ -8,7 +8,7 @@ import {
   leaveGroupChat,
   removeMemberFromGroupChat,
   renameGroupChat,
-} from "../../redux/userSlice";
+} from "../../Redux/userSlice";
 
 const UpdateGroupChat = ({ setIsUpdateGroupChatModal }) => {
   const selectedChat = useSelector((state) => state?.user?.selectedChat);
