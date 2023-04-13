@@ -20,6 +20,7 @@ const SignupBox = () => {
   const [picLoading, setPicLoading] = useState(false);
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -59,7 +60,7 @@ const SignupBox = () => {
       );
       "Res", res1;
       if (res1.status === 200) {
-        useDispatch(loginSuccess(res1.data));
+        dispatch(loginSuccess(res1.data));
         router.push("/chats");
         return toast.success("Logged In Succesfully");
       }
