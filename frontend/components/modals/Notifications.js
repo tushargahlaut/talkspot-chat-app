@@ -35,9 +35,12 @@ const Notifications = ({ setIsNotifications }) => {
           <p className="my-2 italic text-xl">No New Notifications</p>
         ) : (
           <div className="flex flex-col w-2/3 md:w-1/2">
-            {notif.slice(0, 3).map((e) => {
+            {notif.slice(0, 3).map((e, index) => {
               return (
-                <div className="bg-gray-200 flex items-center justify-between p-1 my-1">
+                <div
+                  key={index}
+                  className="bg-gray-200 flex items-center justify-between p-1 my-1"
+                >
                   <p>
                     {" "}
                     <span className="font-bold">{e?.sender?.name}</span> :{" "}

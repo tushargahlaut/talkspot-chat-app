@@ -101,6 +101,7 @@ const UpdateGroupChat = ({ setIsUpdateGroupChatModal }) => {
       <div className="flex">
         {users?.map((e) => (
           <div
+            key={e._id}
             onClick={() => handleMemberDelete(e)}
             className="flex m-1 cursor-pointer p-1 rounded-sm bg-orange-600"
           >
@@ -157,6 +158,7 @@ const UpdateGroupChat = ({ setIsUpdateGroupChatModal }) => {
       <div className="flex">
         {searchResults?.map((e) => (
           <div
+            key={e._id}
             onClick={() => handleAddMembers(e)}
             className="flex m-1 cursor-pointer p-1 rounded-sm bg-blue-600"
           >

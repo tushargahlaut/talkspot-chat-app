@@ -22,6 +22,7 @@ const GCMembers = ({ gcMembers, setGcMembers }) => {
     <div className="flex">
       {gcMembers.map((e) => (
         <div
+          key={e._id}
           onClick={() => {
             handleMembers(e);
           }}
@@ -63,6 +64,7 @@ const SearchResults = ({ allUsers, setGcMembers, gcMembers }) => {
     <div className="flex">
       {allUsers.map((e) => (
         <div
+          key={e._id}
           onClick={() => {
             handleMembers(e);
           }}
